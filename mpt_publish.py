@@ -154,19 +154,21 @@ class publish:
     if self.song and self.playing:
       if self.song.has_key('title'):
         title = self.song['title']
+      elif self.song.has_key('name'):
+        title = self.song['name']
       else:
         title = self.song['file']
         if title.endswith('.mp3') or title.endswith('.ogg'):
           title = title[:-4]
       tune.addChild("title").addData(unicode(title,'utf8'))
       if (self.song.has_key('artist')):
-        tune.addChild("artist").addData(unicode(self.song.artist,'utf8'))
+        tune.addChild("artist").addData(unicode(self.song['artist'],'utf8'))
       if (self.song.has_key('album')):
-        tune.addChild("source").addData(unicode(self.song.album,'utf8'))
-      if (self.song.has_key('pos') and self.song.pos > 0):
-        tune.addChild("track").addData(str(self.song.pos))
+        tune.addChild("source").addData(unicode(self.song['album'],'utf8'))
+      if (self.song.has_key('pos') and self.song['pos'] > 0):
+        tune.addChild("track").addData(str(self.song['pos']))
       if (self.song.has_key('time')):
-        tune.addChild("length").addData(str(self.song.time))
+        tune.addChild("length").addData(str(self.song['time']))
       print "Publishing song "+title
     else:
       print "Paused"

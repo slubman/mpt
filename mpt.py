@@ -17,7 +17,7 @@
 
 import sys
 import mpt_publish
-import mpdclient2
+import mpd
 import time
 from socket import error as socketerror
 
@@ -34,14 +34,15 @@ class MpdConnector:
 
   def connect(self):
     try:
-      self.mpd=mpdclient2.connect(host=mpt_config.mpd_host,port=mpt_config.mpd_port)
+      self.mpd=mpd.MPDClient()
+      self.mpd.connect(host = mpt_config.mpd_host, port = mpt_config.mpd_port)
     except socketerror:
       return False
     return True
 
   def disconnect(self):
     try:
-      self.mpd.close()
+      self.mpd.disconnect()
     except EOFError:
       pass
 
@@ -55,7 +56,7 @@ class MpdConnector:
     return True
 
   def is_playing(self):
-    play=self.mpd.status().state
+    play=self.mpd.status()['state']
     if (play == 'play') :
       return True
     else:
@@ -81,8 +82,8 @@ class MpdConnector:
     except EOFError:
       return False
   #  if (chan==pub.song && chan.artist==pub.song.artist && chan.title==pub.song.title && chan.song.album==pub.song.album && chan.track==pub.song.track && chan.duration==pub.song.duration && play==pub.playing):
-    if play and chan and pub.song:
-      if (chan.file != pub.song.file or play!=pub.playing):
+    if play and (chan.has_key('title') or chan.has_key('name')) and pub.song:
+      if (chan['file'] != pub.song['file'] or play!=pub.playing):
         pub.song=chan
         pub.playing=play
         pub.publish()
